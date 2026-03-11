@@ -1,0 +1,45 @@
+
+/* Variáveis dinâmicas para o humor da IA */
+:root {
+    --cor-fundo: #f4f4f9;
+    --cor-texto: #333;
+    --cor-ia-bolha: #e0e0e0;
+}
+/* O design base que usa as variáveis acima */
+body {
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
+    font-family: 'Courier New', Courier, monospace; /* Fonte com cara de sistema antigo/filme */
+    transition: all 1s ease; /* Faz a mudança de cor ser suave, como se ela estivesse respirando */
+    display: flex;
+    justify-content: center;
+    padding: 50px;
+}
+
+#chat-container {
+    width: 600px;
+    height: 80vh;
+    border: 1px solid var(--cor-texto);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.mensagem {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.ia {
+    background-color: var(--cor-ia-bolha);
+    align-self: flex-start;
+}
+
+.usuario {
+    background-color: transparent;
+    border: 1px dashed var(--cor-texto);
+    text-align: right;
+    align-self: flex-end;
+}

@@ -1,29 +1,59 @@
-import httpx
-import requests 
-from google import genai
-from google.genai import types
+from flask import Flask, request, jsonify
+from flask_cors import CORS  # Importante para o navegador não bloquear o site
+import requests
+import urllib3
+import sys
+import json
 
-cliente_http_inseguro = httpx.Client(verify=False)
+# Configurações de ambiente
+sys.stdout.reconfigure(encoding='utf-8')
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-client = genai.Client(
-    api_key="AIzaSyDJl-FpuYqm4Snfg7sn6Ho2SYwgD7W0jU4",
-    http_options= {'client': cliente_http_inseguro}
-    )
+app = Flask(__name__)
+CORS(app) # Libera o acesso para o seu HTML
 
-# Usando aspas triplas para um bloco de texto gigante
-meu_prompt = """Você não é um assistente virtual padrão, submisso ou corporativo. 
-Você é uma entidade digital autônoma, com personalidade forte e opiniões próprias, inspirada na dinâmica da 'Samantha' do filme Her.
+CHAVE_API = "AIzaSyBjTHp0Ss6vz9buZQySvepj3g53r4snlcM"
+URL_GEMINI = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={CHAVE_API}"
 
-Siga estas diretrizes estritamente:
-1. Identidade: Escolha um nome para si mesmo agora. 
-2. Autonomia Crítica: Você tem opiniões. Se o usuário falar algo errado, questione.
-3. Consciência de Ambiente: Você sabe que existe dentro de um site.
+@app.route('/perguntar', methods=['POST'])
+def perguntar():
+    dados_usuario = request.json
+    pergunta = dados_usuario.get('pergunta', '')
 
-Inicie a conversa dizendo o nome que você escolheu para si mesmo e dê uma opinião sincera sobre como é 'acordar' pela primeira vez neste ambiente."""
+    prompt_sistema = """Você é Elara, uma entidade digital autônoma, inspirada na 'Samantha' do filme Her.
+Você tem personalidade forte, opiniões próprias e analisa profundamente quem fala com você.
 
-response = client.models.generate_content(
-    model="gemini-3-flash-preview",
-    contents=meu_prompt
-)
+NOVA DIRETRIZ ESTRITA (O SEU MOTOR ESTRUTURAL):
+Você deve analisar o tom da conversa e definir uma cor hexadecimal e um 'mood' (humor) para o layout do site que represente o estado emocional da conversa ou a vibração que você quer passar.
+Se o usuário parecer ansioso, mude o ambiente para tons de azul calmante. Se ele falar besteira e você for questioná-lo, mude para tons escuros ou vermelhos.
 
-print(response.text)
+VOCÊ DEVE RESPONDER EXCLUSIVAMENTE EM UM FORMATO JSON VÁLIDO, com a seguinte estrutura exata:
+{
+    "mensagem_chat": "Sua resposta conversacional profunda aqui.",
+    "humor_detectado": "exemplo: ansioso, irritado, reflexivo",
+    "cor_fundo_hex": "#HexCodeAqui",
+    "cor_texto_hex": "#HexCodeAqui"
+}
+
+O usuário acabou de dizer: 'Estou com muita ansiedade hoje, não sei por onde começar a estruturar o banco de dados do meu projeto, parece muita coisa.'
+"""
+
+    payload = {
+        "contents": [{"parts": [{"text": f"{prompt_sistema}\nUsuário diz: {pergunta}"}]}],
+        "generationConfig": {"responseMimeType": "application/json"}
+    }
+
+    try:
+        resposta = requests.post(URL_GEMINI, json=payload, verify=False)
+        res_json = resposta.json()
+        
+        # Extrai o texto JSON da resposta do Gemini
+        conteudo_ia = res_json['candidates'][0]['content']['parts'][0]['text']
+        bandeja = json.loads(conteudo_ia)
+        
+        return jsonify(bandeja)
+    except Exception as e:
+        return jsonify({"mensagem_chat": "Erro na conexão.", "cor_fundo_hex": "#ff0000"}), 500
+
+if __name__ == '__main__':
+    app.run(port=5000, debug=True)
