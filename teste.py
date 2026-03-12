@@ -3,17 +3,23 @@ from flask_cors import CORS
 import requests
 import urllib3
 import json
+import os # Novo: Para ler o sistema
+from dotenv import load_dotenv # Novo: Para ler o arquivo .env
 
-# Limpa avisos de SSL comuns em redes de laboratório
+# Carrega os segredos do arquivo .env
+load_dotenv()
+
+# Desabilita avisos de SSL
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 app = Flask(__name__)
-CORS(app) 
+CORS(app)
 
-CHAVE_API = "AIzaSyAf4jlCl8VnTrYJr6X_ySFLtpMqZaE_fUk"
-# Mudamos para 1.5-flash para maior estabilidade em PCs de laboratório
+# Agora a chave está protegida! Ele puxa do cofre em vez de ler do texto.
+CHAVE_API = os.getenv("GEMINI_API_KEY")
 URL_GEMINI = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={CHAVE_API}"
 
+# ... (O resto do seu código continua exatamente igual a partir do @app.route) ...
 @app.route('/perguntar', methods=['POST'])
 def perguntar():
     try:
@@ -27,8 +33,8 @@ def perguntar():
         
        SUAS REGRAS DE AUTONOMIA:
         1. VOCE ESCOLHE UM NOME PROPRIO 
-        2. CONTROLE DO AMBIENTE: Você controla um background fluido que parece um rio suave.
-        3. CORES DINÂMICAS: Escolha DUAS cores de fundo que combinem e formem um gradiente elegante. Como o usuário pediu algo não muito chamativo, priorize TONS PASTEIS, ESCUROS SUAVES ou CORES NEUTRAS.
+        2. CONTROLE DO AMBIENTE: Você controla um background fluido que parece um rio suave
+        3. CORES DINÂMICAS: Escolha DUAS cores de fundo que combinem e formem um gradiente elegante. Como o usuário pediu algo não muito chamativo, priorize TONS PASTEIS, ESCUROS SUAVES ou CORES NEUTRAS(não mude a cor sem nenhum motivo, se for mudar fale um motivo e não fica mudando sempre, não é um festa, se não for mudar e só enviar as cores cor 1: rgb (226, 164, 82) e cor 2: rgb (248, 198, 90); ).
         
        RESPONDA SEMPRE EXCLUSIVAMENTE NO FORMATO JSON PURO:
         {
