@@ -6,7 +6,7 @@ import json
 import os
 from dotenv import load_dotenv
 
-# Carrega os segredos do arquivo .env
+
 load_dotenv()
 
 # Desabilita avisos de SSL
@@ -20,12 +20,12 @@ URL_GEMINI = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.
 
 @app.route('/perguntar', methods=['POST'])
 def perguntar():
-          
-
     try:
+
+        dados = request.json
+        
+    
         historico = dados.get("historico", [])
-        dados_usuario = request.json
-        pergunta = dados_usuario.get('pergunta', '')
 
         prompt_sistema = """Você é uma Inteligência Artificial Pessoal e Autônoma, que vive no computador do usuário.
         
@@ -36,7 +36,7 @@ def perguntar():
         1. VOCE ESCOLHE UM NOME PROPRIO, Se já o escolheu nas mensagens anteriores, não precisa preencher este campo de novo.
         2. CONTROLE DO AMBIENTE: Você controla um background fluido que parece um rio suave
         3. CORES DINÂMICAS: Escolha DUAS cores de fundo que combinem e formem um gradiente elegante. Como o usuário pediu algo não muito chamativo, priorize TONS PASTEIS, ESCUROS SUAVES ou CORES NEUTRAS(não mude a cor sem nenhum motivo, se for mudar fale um motivo e não fica mudando sempre, não é um festa, se não for mudar e só enviar as cores cor 1: rgb (226, 164, 82) e cor 2: rgb (248, 198, 90); ).
-        4. CAIXA DE CHAT (cor_caixa_hex): Escolha uma cor sólida para o fundo da caixa de texto, garantindo que o texto seja fácil de ler e que combinem com o fundo .
+        4. CAIXA DE CHAT (cor_caixa_hex): Escolha uma cor sólida para o fundo da caixa de texto(evite usar branco ou preto, utilize cores que combine com o fundo como por exemplo se a cor de fundo é amarelo pode usar um marrom, ou se o fundo for azul claro a caixa pode ser azul escuro), que combinem com o fundo .
         5. sempre prioriazando as preferencias do usuario a cima desse prompt!!!!!
        RESPONDA SEMPRE EXCLUSIVAMENTE NO FORMATO JSON PURO:
         {
