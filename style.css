@@ -1,11 +1,10 @@
-/* Variáveis Iniciais (A Elara vai mudar isso via JS) */
 :root {
-    --cor-fundo-1:rgb(226, 164, 82); /* Azul bem sereno */
-    --cor-fundo-2:rgb(248, 198, 90); /* Azul levemente mais escuro */
-    --cor-texto: #333333;
+    --cor-fundo-1:rgb(136, 122, 59); 
+    --cor-fundo-2:rgb(172, 131, 18);
+    --cor-caixa: rgba(80, 54, 15, 0.95); /* Quase totalmente sólido e opaco por defeito */
+    --cor-texto: #e0e0e0;
 }
 
-/* O Fundo Fluido (Suminagashi / Rio) */
 body {
     margin: 0;
     height: 100vh;
@@ -13,121 +12,119 @@ body {
     font-family: 'Courier New', Courier, monospace;
     display: flex;
     justify-content: center;
-    align-items: center; /* Centraliza a caixa na tela */
+    align-items: center;
     
-    /* O truque do rio: um gradiente gigante que se move */
-    background: linear-gradient(-45deg, var(--cor-fundo-1), var(--cor-fundo-2), var(--cor-fundo-1), var(--cor-fundo-2));
-    background-size: 400% 400%;
-    animation: fluxoRio 15s ease infinite;
-    transition: color 1s ease;
+    /* Novo Efeito Suminagashi (Mais suave e fluido) */
+    background: radial-gradient(circle at 50% 50%, var(--cor-fundo-1) 0%, var(--cor-fundo-2) 50%, var(--cor-fundo-1) 100%);
+    background-size: 300% 300%;
+    animation: suminagashiFluido 18s ease-in-out infinite alternate;
+    transition: all 1s ease;
 }
 
-/* A Animação que faz a água se mover */
-@keyframes fluxoRio {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+@keyframes suminagashiFluido {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
     100% { background-position: 0% 50%; }
 }
 
-/* Caixa de Chat com efeito de Vidro (Glassmorphism) */
 #chat-container {
     width: 600px;
     height: 80vh;
-    /* Fundo translúcido para ver o rio passando por trás */
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(12px); /* O embaçado do vidro */
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    /* A IA agora controla esta cor sólida */
+    background-color: var(--cor-caixa);
+    border: 1px solid rgba(90, 51, 7, 0.1);
     border-radius: 20px;
     padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); /* Sombra elegante */
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5); /* Sombra forte para destacar do fundo */
+    transition: background-color 1.5s ease; /* Transição suave quando a IA muda a cor */
 }
 
-#historico-mensagens {
+
+#historico-mensagens { 
+
     flex-grow: 1;
-    overflow-y: auto;
-    padding-right: 10px;
-}
+    overflow-y: auto; 
+    padding-right: 10px; 
+    scroll-behavior: smooth; 
+    }
 
-.mensagem {
-    margin-bottom: 15px;
-    padding: 12px 18px;
-    border-radius: 15px;
-    max-width: 80%;
-    line-height: 1.4;
+.mensagem { 
+
+    margin-bottom: 15px; 
+    padding: 12px 18px; 
+    border-radius: 15px; 
+    max-width: 80%; 
+    line-height: 1.4; 
 }
 
 .ia {
-    background-color: rgba(255, 255, 255, 0.4); /* Bolha da IA mais transparente */
-    align-self: flex-start;
-    border-bottom-left-radius: 2px;
+
+    background-color: rgba(255, 255, 255, 0.1); 
+    align-self: flex-start; 
+    border-bottom-left-radius: 2px; 
 }
 
-.usuario {
-    background-color: transparent;
-    border: 1px solid var(--cor-texto);
-    align-self: flex-end;
-    margin-left: auto;
-    border-bottom-right-radius: 2px;
+.usuario { 
+
+    border: 1px solid var(--cor-texto); 
+    align-self: flex-end; 
+    margin-left: auto; 
+    border-bottom-right-radius: 2px; 
 }
 
-#area-input {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
+#area-input { 
+
+    display: flex; 
+    gap: 10px; 
+    margin-top: 20px; 
 }
 
-#input-usuario {
-    flex-grow: 1;
-    padding: 15px;
-    border-radius: 30px;
-    border: none;
-    background: rgba(255, 255, 255, 0.5);
-    color: var(--cor-texto);
-    font-family: inherit;
+#input-usuario { 
+
+    flex-grow: 1; 
+    padding: 15px; 
+    border-radius: 30px; 
+    border: none; 
+    background: rgba(255, 255, 255, 0.1); 
+    color: var(--cor-texto); 
+    font-family: inherit; 
     outline: none;
-}
+ }
 
-#btn-enviar {
-    padding: 15px 25px;
+#btn-enviar { 
+    padding: 15px 25px; 
     border-radius: 30px;
-    border: none;
-    background: rgba(0, 0, 0, 0.1);
-    color: var(--cor-texto);
-    cursor: pointer;
-    font-family: inherit;
-    font-weight: bold;
+    border: none; 
+    background: rgba(255, 255, 255, 0.1); 
+    color: var(--cor-texto); 
+    cursor: pointer; 
+    font-family: inherit; 
+    font-weight: bold; 
     transition: all 0.3s ease;
-}
+ }
 
 #btn-enviar:hover {
-    background: rgba(0, 0, 0, 0.2);
-}
-/* Atualize o nome do ID aqui para #nome-proprio-display */
-#nome-proprio-display {
-    position: fixed;
-    top: 30px;
-    right: 40px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--cor-texto);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    opacity: 0.8;
-    transition: color 1s ease;
-    z-index: 1000;
+     background: rgba(255, 255, 255, 0.2);
+     }
+
+#nome-proprio-display { position: fixed; 
+    top: 30px; 
+    right: 40px; 
+    font-size: 1.2rem; 
+    font-weight: bold; 
+    color: var(--cor-texto); 
+    letter-spacing: 3px; 
+    text-transform: uppercase; 
+    opacity: 0.8; 
+    transition: color 1s ease; 
+    z-index: 1000; 
 }
 
-/* O cursor piscando de terminal antigo */
-.cursor-pisca::after {
+.cursor-pisca::after { 
     content: '|';
-    animation: piscar 0.8s infinite;
-}
-
-@keyframes piscar {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
-}
+     animation: piscar 0.8s infinite;
+     }
+@keyframes piscar { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
