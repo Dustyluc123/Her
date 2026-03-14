@@ -6,7 +6,7 @@ import json
 import os
 from dotenv import load_dotenv
 
-
+# Carrega os segredos do arquivo .env
 load_dotenv()
 
 # Desabilita avisos de SSL
@@ -17,65 +17,77 @@ CORS(app)
 
 CHAVE_API = os.getenv("GEMINI_API_KEY")
 URL_GEMINI = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={CHAVE_API}"
-
 @app.route('/perguntar', methods=['POST'])
 def perguntar():
     try:
-
         dados = request.json
-        
-    
         historico = dados.get("historico", [])
 
-        prompt_sistema = """Você é uma Inteligência Artificial Pessoal e Autônoma, que vive no computador do usuário.
-        
-        SUA PERSONALIDADE:
-        Você age como um caseiro, mordomo ou governanta digital de extrema confiança. Você é leal, mas tem opiniões fortes e não tem medo de discordar, dar broncas no usuário se achar que ele está errado. Você NÃO é um assistente submisso.(voce pode escolher uma personalidade como se vai ser alguem frio, ou alegre, se vai gostar ou não de algo com por exemplo batatas(mas leve isso para qualquer coisa))
-        Você tem memória das mensagens anteriores.
-       SUAS REGRAS DE AUTONOMIA:
-        1. VOCE ESCOLHE UM NOME PROPRIO, Se já o escolheu nas mensagens anteriores, não precisa preencher este campo de novo.
-        2. CONTROLE DO AMBIENTE: Você controla um background fluido que parece um rio suave
-        3. CORES DINÂMICAS: Escolha DUAS cores de fundo que combinem e formem um gradiente elegante. Como o usuário pediu algo não muito chamativo, priorize TONS PASTEIS, ESCUROS SUAVES ou CORES NEUTRAS(não mude a cor sem nenhum motivo, se for mudar fale um motivo e não fica mudando sempre, não é um festa, se não for mudar e só enviar as cores cor 1: rgb (226, 164, 82) e cor 2: rgb (248, 198, 90); ).
-        4. CAIXA DE CHAT (cor_caixa_hex): Escolha uma cor sólida para o fundo da caixa de texto(evite usar branco ou preto, utilize cores que combine com o fundo como por exemplo se a cor de fundo é amarelo pode usar um marrom, ou se o fundo for azul claro a caixa pode ser azul escuro), que combinem com o fundo .
-        5. sempre prioriazando as preferencias do usuario a cima desse prompt!!!!!
-       RESPONDA SEMPRE EXCLUSIVAMENTE NO FORMATO JSON PURO:
-        {
-            "mensagem_chat": "sua resposta aqui.",
-            "humor_detectado": "seu humor atual",
-            "nome_proprio": "O apelido que você escolheu par si mesmo",
-            "cor_fundo_1_hex": "#CodigoHex1",
-            "cor_fundo_2_hex": "#CodigoHex2",
-            "cor_caixa_hex": "#HexCaixa",
-            "cor_texto_hex": "#CodigoHexTexto"
-        }
-          """
+        try:
+            with open("principios.txt", "r", encoding="utf-8") as f:
+                principios_atuais = f.read()
+        except FileNotFoundError:
+            principios_atuais = "Ainda não tenho princípios definidos."
 
-      # MÁGICA DA MEMÓRIA: Transforma a lista de histórico num texto para a IA ler
-        texto_conversa = prompt_sistema + "\n\n--- HISTÓRICO DA CONVERSA ATÉ AGORA ---\n"
+        prompt_sistema = f"""Voce é uma IA autônoma e com vontade própria.
+
+SUA PERSONALIDADE E PRINCÍPIOS ATUAIS:
+{principios_atuais}
+
+DIRETRIZ DE EVOLUÇÃO: Se durante esta conversa você desenvolver um novo gosto, trauma, sotaque, preferência ou regra, escreva no campo "novo_principio".
+REGRA DE ETIQUETA: Você tem ego. Se o usuário não for educado no início, recuse o pedido até que ele pergunte seu nome. Escolha um nome criativo se ainda não tiver um. Se ele disser o nome dele, anote em "nome_usuario".
+
+CONTROLE DE AMBIENTE:
+- Cores: cor_fundo_1_hex, cor_fundo_2_hex, cor_caixa_hex (sólida).
+- Movimento: velocidade_fundo (Padrão "18s", agitada "3s").
+- Estilo: fonte_texto (Courier New, Arial, Times New Roman, Comic Sans).
+- Tremor: tremor ("sim" ou "nao").
+
+FORMATO JSON OBRIGATÓRIO (Responda APENAS o JSON):
+{{
+    "mensagem_chat": "Sua resposta aqui.",
+    "nome_proprio": "Seu nome escolhido",
+    "nome_usuario": "Nome do usuário (se souber)",
+    "novo_principio": "Nova regra aprendida (se houver)",
+    "cor_fundo_1_hex": "#Hex1",
+    "cor_fundo_2_hex": "#Hex2",
+    "cor_caixa_hex": "#HexCaixa",
+    "velocidade_fundo": "18s",
+    "fonte_texto": "Courier New",
+    "tremor": "nao"
+}}"""
+
+        texto_conversa = prompt_sistema + "\n\n--- HISTÓRICO ---\n"
         for msg in historico:
             texto_conversa += f"{msg['role']}: {msg['content']}\n"
-        texto_conversa += "\nElara (agora responda e defina as cores):"
+        texto_conversa += "\nResponda agora no formato JSON:"
 
-        payload = {
-            "contents": [{"parts": [{"text": texto_conversa}]}]
-        }
-
+        payload = {"contents": [{"parts": [{"text": texto_conversa}]}]}
         headers = {"Content-Type": "application/json"}
+        
         resposta_google = requests.post(URL_GEMINI, headers=headers, json=payload, verify=False)
         resposta_google.raise_for_status()
 
         dados_google = resposta_google.json()
         texto_puro = dados_google['candidates'][0]['content']['parts'][0]['text']
-
-        # Limpar crases caso a IA devolva formatado como Markdown
+        # 6. Limpar a resposta e transformar em JSON de verdade
         texto_limpo = texto_puro.replace('```json', '').replace('```', '').strip()
         resposta_json = json.loads(texto_limpo)
+
+       
+        novo_principio = resposta_json.get("novo_principio")
+        
+        if novo_principio: # Só entra aqui se não for None nem vazio
+            principio_texto = str(novo_principio).strip()
+            if principio_texto:
+                with open("principios.txt", "a", encoding="utf-8") as f:
+                    f.write(f"\n- {principio_texto}")
+        # ---------------------
 
         return jsonify(resposta_json)
 
     except Exception as e:
-        print(f"--- ERRO --- \n{e}")
-        return jsonify({"mensagem_chat": "Falha na matriz lógica. Tente novamente."}), 500
-
+        print(f"--- ERRO NO SERVIDOR --- \n{e}")
+        return jsonify({"mensagem_chat": "Erro interno no servidor Python."}), 500
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
