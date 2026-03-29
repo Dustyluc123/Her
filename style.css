@@ -1,10 +1,9 @@
 :root {
-    --cor-fundo-1:rgb(136, 122, 59); 
-    --cor-fundo-2:rgb(172, 131, 18);
-    --cor-caixa: rgba(80, 54, 15, 0.95); /* Quase totalmente sólido e opaco por defeito */
-    --cor-texto: #e0e0e0;
+   --cor-fundo-1: rgb(221, 191, 91);
+   --cor-fundo-2: rgb(158, 32, 70);
+   --cor-caixa: rgba(18, 10, 35, 0.95); /* Quase totalmente sólido e opaco por defeito */
+    --cor-texto: #e0e0e0;   
 }
-
 body {
     margin: 0;
     height: 100vh;
@@ -14,11 +13,13 @@ body {
     justify-content: center;
     align-items: center;
     
-    /* Novo Efeito Suminagashi (Mais suave e fluido) */
+    /* Novo Efeito Suminagashi */
     background: radial-gradient(circle at 50% 50%, var(--cor-fundo-1) 0%, var(--cor-fundo-2) 50%, var(--cor-fundo-1) 100%);
     background-size: 300% 300%;
-    animation: suminagashiFluido 18s ease-in-out infinite alternate;
-    transition: all 1s ease;
+    animation: suminagashiFluido 10s ease-in-out infinite alternate;
+
+    /* A SOLUÇÃO ESTÁ AQUI: Transição apenas para o background, não para 'all' */
+    transition: background 1.5s ease; 
 }
 
 @keyframes suminagashiFluido {
