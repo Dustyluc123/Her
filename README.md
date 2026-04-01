@@ -5,7 +5,7 @@
 
 <img src="https://img.shields.io/badge/Status-Alpha_Development-red?style=for-the-badge" /> <img src="https://img.shields.io/badge/Python-3.13-blue?style=for-the-badge&logo=python&logoColor=white" /> <img src="https://img.shields.io/badge/Powered_by-Gemini_API-orange?style=for-the-badge&logo=googlegemini&logoColor=white" />
 
-<img src="./img/elara_banner.png" alt="Elara Interface" width="100%" />
+<img src="herbanner.webp" alt="Elara Interface" width="100%" />
 
 </div>
 
